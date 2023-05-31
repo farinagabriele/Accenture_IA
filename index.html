@@ -13,12 +13,12 @@
     <h2>Sentiment analysis con la classificazione binaria</h2> 
 
     <div id="dinamica">
-        <textarea name="TA" id="TA" cols="30" rows="10"></textarea>
+        <textarea name="TA" id="TA" cols="30" rows="10" placeholder="Inserisci il Testo"></textarea>
     </div>
     <div id="bottoni">
-        <input type="button" value="Pulizia Testo" id="puliziaT">
-        <input type="button" value="Lemming" id="lemming">
-        <input type="button" value="Tokenization" id="tokenization">
+        <input type="button" value="Pulizia Testo" id="puliziaT" onclick="ajax()">
+        <input type="button" value="Lemming" id="lemming" onclick="ajax()">
+        <input type="button" value="Tokenization" id="tokenization" onclick="ajax()">
     </div>
 </body>
 </html>

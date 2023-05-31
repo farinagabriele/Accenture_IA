@@ -1,0 +1,41 @@
+body{
+    height:1000px;
+    position:relative;
+    font-family:'Lucida Sans',Geneva, Verdana, sans-serif;
+    background: linear-gradient(100deg, #fffffffb 10%, #8400ff 90%);
+}
+
+#bottoni, #dinamica,h1,h2{
+    text-align: center;
+}
+
+#dinamica{
+    
+    width:100%;
+    height: 400px;
+}
+
+textarea{
+    width: 1000px;
+    height: 300px;
+
+    font-size: 20px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+}
+
+#puliziaT,#lemming,#tokenization{
+    font-family:'Lucida Sans',Geneva, Verdana, sans-serif;
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    border: 0px;
+    font-size: medium;
+}
+#bottoni{
+    word-spacing: 100px;
+}
