@@ -4,14 +4,16 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from keras.utils import pad_sequences
 import re
+from keras.utils import pad_sequences
 import string
-from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow import Tokenizer
 
 
 app = Flask(__name__)
 pagina = 'npl.html'
 
 tokenizer = Tokenizer()
+sequence_phrases = []
 
 #da importare csv per definire df
 phrases = 
@@ -29,25 +31,31 @@ def lemming_e_rimozione_sto_words():
 
     for i in range(len(phrases)):
     #assegno ad una nuova variabile "sentence" la frase all'interno di text con indice i (utilizzare la funzione iloc)
-    sentence = phrases.iloc[i]
-    
-    #divido la fase nelle parole che la compongono
-    sentence = sentence.split(' ')
-    #dichiaro una nuova variabile
-    newSentence = []
-    for w in sentence:
-        #lemmatizzo w 
-        w = lemmatizer.lemmatize(w)
-        #controllo se w non è una stop word
-        if w not in stop:
-        #se non lo è allora aggiungo w alla variabile definita sopra
-            newSentence.append(w)
+        sentence = phrases.iloc[i]
+        
+        #divido la fase nelle parole che la compongono
+        sentence = sentence.split(' ')
+        #dichiaro una nuova variabile
+        newSentence = []
+        for w in sentence:
+            #lemmatizzo w 
+            w = lemmatizer.lemmatize(w)
+            #controllo se w non è una stop word
+            if w not in stop:
+            # se non lo è allora aggiungo w alla variabile definita sopra
+                newSentence.append(w)
     phrases.iloc[i] = ' '.join(newSentence)
     return render_template(pagina, text=list(phrases))
 
 
 @app.route("/tokenization")
 def padding_con_keras():
+    vocab_size = len(tokenizer.word_index) + 1
+    maxlen=0
+    for phrase in sequence_phrases:
+        if maxlen<len(phrase):
+            maxlen=len(phrase)
+    padding_phrases = pad_sequences(sequence_phrases, padding='post', maxlen=maxlen)
     return render_template(pagina, text = ' ') #da completare
 
 @app.route("/pulizia.py")
