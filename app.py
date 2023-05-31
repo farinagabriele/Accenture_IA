@@ -1,22 +1,27 @@
+import re
+import string
 from flask import Flask, render_template
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from keras.utils import pad_sequences
-import re
-from keras.utils import pad_sequences
-import string
-from tensorflow import Tokenizer
+from tensorflow.keras.preprocessing.text import Tokenizer
+import pandas as pd
+import numpy as np
 
 
 app = Flask(__name__)
-pagina = 'npl.html'
+
+PAGINA = 'npl.html'
+
+df_am = pd.read_csv("./amazon_cells_labelled.txt",sep='\t',names=['phrase','label'])
 
 tokenizer = Tokenizer()
 sequence_phrases = []
 
 #da importare csv per definire df
-phrases = 
+phrases = df_am['phrase']
+label = df_am['label']
 
 
 @app.route("/lemming")
@@ -45,7 +50,7 @@ def lemming_e_rimozione_sto_words():
             # se non lo è allora aggiungo w alla variabile definita sopra
                 newSentence.append(w)
     phrases.iloc[i] = ' '.join(newSentence)
-    return render_template(pagina, text=list(phrases))
+    return render_template(PAGINA, text=list(phrases))
 
 
 @app.route("/tokenization")
@@ -56,7 +61,7 @@ def padding_con_keras():
         if maxlen<len(phrase):
             maxlen=len(phrase)
     padding_phrases = pad_sequences(sequence_phrases, padding='post', maxlen=maxlen)
-    return render_template(pagina, text = ' ') #da completare
+    return render_template(PAGINA, text = ' ') #da completare
 
 @app.route("/pulizia.py")
 def pulizia_testo():
@@ -72,7 +77,7 @@ def pulizia_testo():
     text = text.replace("  ", " ")
     text = text.replace("   ", " ")
 
-    return render_template(pagina, text = text) 
+    return render_template(PAGINA, text = text) 
 
 @app.route("/sequence")
 def tokenization_e_sequence_con_keras():
@@ -80,4 +85,4 @@ def tokenization_e_sequence_con_keras():
     #vocabolario di parole
     len(tokenizer.word_index)    
     sequence_phrases = tokenizer.texts_to_sequences(phrases)
-    return render_template(pagina, text = ' ') #da completare
+    return render_template(PAGINA, text = ' ') #da completare
