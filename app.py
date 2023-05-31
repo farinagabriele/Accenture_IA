@@ -8,6 +8,8 @@ from keras.utils import pad_sequences
 from keras.preprocessing.text import Tokenizer
 import pandas as pd
 import numpy as np
+from keras.models import load_model
+
 
 
 app = Flask(__name__)
@@ -22,12 +24,27 @@ df_am = pd.read_csv("./amazon_cells_labelled.txt",sep='\t',names=['phrase','labe
 tokenizer = Tokenizer()
 sequence_phrases = []
 
-#da importare csv per definire df
+# da importare csv per definire df
 phrases = df_am['phrase']
 label = df_am['label']
 
+# rete neurale
+model = load_model("sentiment_analysis.h5")
 
-@app.route("/lemming")
+
+
+
+@app.route("/answer", methods=["GET"])
+def answer():
+    return model.predict(txt)
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
+
+
+@app.route("/lemming", methods=["GET"])
 def lemming_e_rimozione_sto_words():
     #codice per definire le stopword ed inizializzare il lemmatizer
     # Stop words
@@ -56,7 +73,7 @@ def lemming_e_rimozione_sto_words():
     return render_template(PAGINA, text=list(phrases))
 
 
-@app.route("/tokenization")
+@app.route("/tokenization", methods=["GET"])
 def padding_con_keras():
     vocab_size = len(tokenizer.word_index) + 1
     maxlen=0
@@ -65,6 +82,7 @@ def padding_con_keras():
             maxlen=len(phrase)
     padding_phrases = pad_sequences(sequence_phrases, padding='post', maxlen=maxlen)
     return render_template(PAGINA, text = ' ') #da completare
+
 
 def pulizia_testo(text):
     #inserire qui pulizia del testo
@@ -81,7 +99,8 @@ def pulizia_testo(text):
 
     return render_template(PAGINA, text = text) 
 
-@app.route("/sequence")
+
+@app.route("/sequence", methods=["GET"])
 def tokenization_e_sequence_con_keras():
     tokenizer.fit_on_texts(phrases)
     #vocabolario di parole

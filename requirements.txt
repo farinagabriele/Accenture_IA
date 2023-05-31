@@ -1,6 +1,6 @@
 flask
 nltk
 keras
-tensorflow
 numpy
 pandas
+tensorflow
