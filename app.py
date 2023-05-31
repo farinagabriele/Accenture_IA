@@ -5,12 +5,15 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from keras.utils import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
+from keras.preprocessing.text import Tokenizer
 import pandas as pd
 import numpy as np
 
 
 app = Flask(__name__)
+
+# Set templates to auto-reload
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 PAGINA = 'npl.html'
 
