@@ -11,7 +11,10 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 app = Flask(__name__)
 pagina = 'npl.html'
 
+tokenizer = Tokenizer()
+
 #da importare csv per definire df
+phrases = 
 
 
 @app.route("/lemming")
@@ -49,8 +52,24 @@ def padding_con_keras():
 
 @app.route("/pulizia.py")
 def pulizia_testo():
-    return render_template(pagina, text = ' ') #da completare
+    #inserire qui pulizia del testo
+    # Elimino siti web
+    text = text.lower()
+    text = re.sub("http://([a-z])*[.]([a-z])*[.]([a-z])*", "", text)
+    # Elimino la punteggiatura
+    for c in string.punctuation:
+        text = text.replace(c, "")
+    # Elimino i numeri
+    text = re.sub("\d","",text)
+    text = text.replace("  ", " ")
+    text = text.replace("   ", " ")
+
+    return render_template(pagina, text = text) 
 
 @app.route("/sequence")
 def tokenization_e_sequence_con_keras():
+    tokenizer.fit_on_texts(phrases)
+    #vocabolario di parole
+    len(tokenizer.word_index)    
+    sequence_phrases = tokenizer.texts_to_sequences(phrases)
     return render_template(pagina, text = ' ') #da completare
