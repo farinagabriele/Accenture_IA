@@ -63,8 +63,7 @@ def padding_con_keras():
     padding_phrases = pad_sequences(sequence_phrases, padding='post', maxlen=maxlen)
     return render_template(PAGINA, text = ' ') #da completare
 
-@app.route("/pulizia.py")
-def pulizia_testo():
+def pulizia_testo(text):
     #inserire qui pulizia del testo
     # Elimino siti web
     text = text.lower()
