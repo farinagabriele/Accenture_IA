@@ -1,6 +1,6 @@
 import re
 import string
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -23,6 +23,7 @@ df_am = pd.read_csv("./amazon_cells_labelled.txt",sep='\t',names=['phrase','labe
 
 tokenizer = Tokenizer()
 sequence_phrases = []
+padding_txt= []
 
 # da importare csv per definire df
 phrases = df_am['phrase']
@@ -33,10 +34,25 @@ model = load_model("sentiment_analysis.h5")
 
 
 
+@app.route("/pulizia", methods=["GET"])
+def pulizia():
+    if request.args.get("text"):
+        txt = request.args.get("text")
+        txt = pulizia_testo(txt)
+        return render_template(PAGINA, text=txt)
+    
+    else:
+        return render_template(PAGINA)    
+
+    
+
 
 @app.route("/answer", methods=["GET"])
 def answer():
-    return model.predict(txt)
+    if request.args.get("text"):
+        txt = request.args.get("text")
+        #prediction = model.predict(np.array(padding_txt))
+        return render_template("answer.html", answer="0")
 
 
 @app.route("/", methods=["GET"])
@@ -46,47 +62,41 @@ def index():
 
 @app.route("/lemming", methods=["GET"])
 def lemming_e_rimozione_sto_words():
-    #codice per definire le stopword ed inizializzare il lemmatizer
-    # Stop words
-    nltk.download('stopwords')
-    stop=stopwords.words('english')
-    # Lemmatizer
-    nltk.download("wordnet") 
-    lemmatizer = WordNetLemmatizer()
+    if request.args.get("text"):
+        txt = request.args.get("text")
+        # codice per definire le stopword ed inizializzare il lemmatizer
+        # Stop words
+        nltk.download('stopwords')
+        stop=stopwords.words('english')
+        # Lemmatizer
+        nltk.download("wordnet") 
+        lemmatizer = WordNetLemmatizer()
 
-    for i in range(len(phrases)):
-    #assegno ad una nuova variabile "sentence" la frase all'interno di text con indice i (utilizzare la funzione iloc)
-        sentence = phrases.iloc[i]
         
-        #divido la fase nelle parole che la compongono
+        # assegno ad una nuova variabile "sentence" la frase all'interno di text con indice i (utilizzare la funzione iloc)
+        sentence = txt
+            
+        # divido la fase nelle parole che la compongono
         sentence = sentence.split(' ')
-        #dichiaro una nuova variabile
+        # dichiaro una nuova variabile
         newSentence = []
         for w in sentence:
-            #lemmatizzo w 
+            # lemmatizzo w 
             w = lemmatizer.lemmatize(w)
-            #controllo se w non è una stop word
+            # controllo se w non è una stop word
             if w not in stop:
             # se non lo è allora aggiungo w alla variabile definita sopra
                 newSentence.append(w)
-    phrases.iloc[i] = ' '.join(newSentence)
-    return render_template(PAGINA, text=list(phrases))
-
-
-@app.route("/tokenization", methods=["GET"])
-def padding_con_keras():
-    vocab_size = len(tokenizer.word_index) + 1
-    maxlen=0
-    for phrase in sequence_phrases:
-        if maxlen<len(phrase):
-            maxlen=len(phrase)
-    padding_phrases = pad_sequences(sequence_phrases, padding='post', maxlen=maxlen)
-    return render_template(PAGINA, text = ' ') #da completare
+        txt = ' '.join(newSentence)
+        return render_template(PAGINA, text=txt)
+    else:
+        return render_template(PAGINA)
 
 
 def pulizia_testo(text):
     #inserire qui pulizia del testo
     # Elimino siti web
+    print("Inizio:\n", text)
     text = text.lower()
     text = re.sub("http://([a-z])*[.]([a-z])*[.]([a-z])*", "", text)
     # Elimino la punteggiatura
@@ -97,13 +107,26 @@ def pulizia_testo(text):
     text = text.replace("  ", " ")
     text = text.replace("   ", " ")
 
-    return render_template(PAGINA, text = text) 
+    print("Fine:\n", text)
+    return render_template(PAGINA, text=text) 
 
 
-@app.route("/sequence", methods=["GET"])
+@app.route("/tokenization", methods=["GET"])
 def tokenization_e_sequence_con_keras():
-    tokenizer.fit_on_texts(phrases)
-    #vocabolario di parole
-    len(tokenizer.word_index)    
-    sequence_phrases = tokenizer.texts_to_sequences(phrases)
-    return render_template(PAGINA, text = ' ') #da completare
+    if request.args.get("text"):
+        txt = request.args.get("text")
+        tokenizer.fit_on_texts(txt)
+        #vocabolario di parole
+        len(tokenizer.word_index)    
+        sequence_phrases = tokenizer.texts_to_sequences(txt)
+
+        # calcolo massima lunghezza delle parole
+        padding_txt = pad_sequences(sequence_phrases, padding='post', maxlen=len(txt))
+
+        return render_template(PAGINA, text=sequence_phrases)
+    else:
+        return render_template(PAGINA)
+
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8040)

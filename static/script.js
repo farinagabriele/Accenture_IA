@@ -9,10 +9,11 @@ function ajax(route) {
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 //rimettere il testo nella TA
-                TA.innerHTML = this.responseText;
+                TA.value = this.responseText;
+                //document.getElementById('dina').innerHTML = this.responseText;
             }
         };
-        xhttp.open("GET", route, true);
+        xhttp.open("GET", route + "?text=" + testo, true);
         xhttp.send();
     }
 

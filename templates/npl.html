@@ -1,8 +1,1 @@
-{% extends "layout.html" %}
-{% block body %}
-    {% if text %}
-        {{ text }}
-    {% else %}
-        <p>Errore!</p>
-    {% endif %}
-{% endblock %}
+{% if text %}{{ text }}{% else %}<p>Errore!</p>{% endif %}

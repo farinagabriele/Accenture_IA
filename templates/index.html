@@ -16,9 +16,11 @@
         <textarea name="TA" id="TA" cols="30" rows="10" placeholder="Inserisci il Testo"></textarea>
     </div>
     <div id="bottoni">
-        <input type="button" value="Pulizia Testo" id="puliziaT" onclick="ajax()">
-        <input type="button" value="Lemming" id="lemming" onclick="ajax()">
-        <input type="button" value="Tokenization" id="tokenization" onclick="ajax()">
+        <input type="button" value="Pulizia Testo" id="puliziaT" onclick="ajax('pulizia')">
+        <input type="button" value="Lemming" id="lemming" onclick="ajax('lemming')">
+        <input type="button" value="Tokenization" id="tokenization" onclick="ajax('tokenization')">
+        <input type="button" value="Answer" id="answer" onclick="ajax('answer')">
     </div>
+
 </body>
 </html>
