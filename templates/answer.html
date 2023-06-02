@@ -1,1 +1,9 @@
-{% if answer %}{{ answer }}{% else %}<p>Errore!</p>{% endif %}
+{% if sequence %}sequence: {{ sequence }}{% else %}<p>Errore!</p>{% endif %}
+{% if index %}
+Indice:
+{% for key, value in index.items() %}{{ key }}: {{ value }}
+{% endfor %}{% else %}<p>Errore!</p>{% endif %}
+
+{% if padding %}padding: {{ padding }}{% else %}<p>Errore!</p>{% endif %}
+
+{% if answer %}answer: {{ answer }}{% else %}<p>Errore!</p>{% endif %}
