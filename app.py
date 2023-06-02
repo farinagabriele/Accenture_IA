@@ -9,6 +9,7 @@ from keras.preprocessing.text import Tokenizer
 import pandas as pd
 import numpy as np
 from keras.models import load_model
+from keras.optimizers import Adam
 
 
 
@@ -21,9 +22,9 @@ PAGINA = 'npl.html'
 
 df_am = pd.read_csv("./amazon_cells_labelled.txt",sep='\t',names=['phrase','label'])
 
-tokenizer = Tokenizer()
-sequence_phrases = []
-padding_txt= []
+#tokenizer = Tokenizer()
+#sequence_phrases = []
+#padding_txt= []
 
 # da importare csv per definire df
 phrases = df_am['phrase']
@@ -31,7 +32,8 @@ label = df_am['label']
 
 # rete neurale
 model = load_model("sentiment_analysis.h5")
-
+lr = 0.0001
+model.compile(optimizer=Adam(learning_rate=lr), run_eagerly=True)
 
 
 @app.route("/pulizia", methods=["GET"])
@@ -46,13 +48,16 @@ def pulizia():
 
     
 
-
+'''
 @app.route("/answer", methods=["GET"])
 def answer():
     if request.args.get("text"):
         txt = request.args.get("text")
-        #prediction = model.predict(np.array(padding_txt))
-        return render_template("answer.html", answer="0")
+        print("TESTO PRED: ", padding_txt)
+        X = np.array(padding_txt)
+        prediction = model.predict(X)
+        return render_template("answer.html", answer=prediction)
+'''
 
 
 @app.route("/", methods=["GET"])
@@ -66,10 +71,10 @@ def lemming_e_rimozione_sto_words():
         txt = request.args.get("text")
         # codice per definire le stopword ed inizializzare il lemmatizer
         # Stop words
-        nltk.download('stopwords')
+        #nltk.download('stopwords')
         stop=stopwords.words('english')
         # Lemmatizer
-        nltk.download("wordnet") 
+        #nltk.download("wordnet") 
         lemmatizer = WordNetLemmatizer()
 
         
@@ -96,7 +101,7 @@ def lemming_e_rimozione_sto_words():
 def pulizia_testo(text):
     #inserire qui pulizia del testo
     # Elimino siti web
-    print("Inizio:\n", text)
+    #print("Inizio:\n", text)
     text = text.lower()
     text = re.sub("http://([a-z])*[.]([a-z])*[.]([a-z])*", "", text)
     # Elimino la punteggiatura
@@ -107,23 +112,31 @@ def pulizia_testo(text):
     text = text.replace("  ", " ")
     text = text.replace("   ", " ")
 
-    print("Fine:\n", text)
+    #print("Fine:\n", text)
     return render_template(PAGINA, text=text) 
 
 
 @app.route("/tokenization", methods=["GET"])
 def tokenization_e_sequence_con_keras():
     if request.args.get("text"):
-        txt = request.args.get("text")
+        tokenizer = Tokenizer()
+        txt = str(request.args.get("text"))
+        print("TESTO: ", txt)
+        maxL = 16
+        txt = [txt]
         tokenizer.fit_on_texts(txt)
         #vocabolario di parole
-        len(tokenizer.word_index)    
+        len(tokenizer.word_index)
+        print("INDICE: ", tokenizer.word_index)    
         sequence_phrases = tokenizer.texts_to_sequences(txt)
-
+        print("SEQUENCE: ", sequence_phrases)
         # calcolo massima lunghezza delle parole
-        padding_txt = pad_sequences(sequence_phrases, padding='post', maxlen=len(txt))
-
-        return render_template(PAGINA, text=sequence_phrases)
+        padding_txt = pad_sequences(sequence_phrases, padding='post', maxlen=maxL)
+        print("PADDING: ", padding_txt)
+        X = padding_txt
+        print("PRED: ", X)
+        prediction = model.predict(X)
+        return render_template('answer.html', sequence=sequence_phrases, index=tokenizer.word_index, padding=str(padding_txt), answer=prediction)
     else:
         return render_template(PAGINA)
 
